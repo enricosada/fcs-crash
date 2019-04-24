@@ -4,15 +4,21 @@ mono: 5.2.0
 dotnet: 2.1.401
 
 install:
-  # workaround for missing .net 4.5 targing pack
-  - export FrameworkPathOverride=$(dirname $(which mono))/../lib/mono/4.5/
+  # workaround for missing .net 4.6.1 targing pack
+  - export FrameworkPathOverride=$(dirname $(which mono))/../lib/mono/4.6.1-api/
 
 script:
   # restore the repro
   - dotnet restore repro
   # build and run the FCS typecheck
-  - dotnet build
-  - dotnet run --no-build
+  - dotnet build -f $TFM
+  - $RUN_CMD
+
+env:
+  - TFM=net461
+    RUN_CMD=mono ./bin/Debug/net461/fcs-crash.exe
+  - TFM=netcoreapp2.1
+    RUN_CMD=dotnet run -f netcoreapp2.1 --no-build
 
 matrix:
   include:
