@@ -16,9 +16,9 @@ script:
 
 env:
   - TFM=net461
-    RUN_CMD=mono ./bin/Debug/net461/fcs-crash.exe
+    RUN_CMD="mono ./bin/Debug/net461/fcs-crash.exe"
   - TFM=netcoreapp2.1
-    RUN_CMD=dotnet run -f netcoreapp2.1 --no-build
+    RUN_CMD="dotnet run -f netcoreapp2.1 --no-build"
 
 os:
   - linux
