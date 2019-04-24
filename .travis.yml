@@ -11,7 +11,7 @@ script:
   # restore the repro
   - dotnet restore repro
   # build and run the FCS typecheck
-  - dotnet build -v n
+  - dotnet build
   - dotnet run --no-build
 
 matrix:
