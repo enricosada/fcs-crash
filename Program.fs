@@ -33,31 +33,32 @@ let parseAndTypeCheck projPath =
 
     printfn "Loading %s" projPath
 
+    loader.Notifications.Subscribe(fun (l, ws) -> printfn "%A" ws) |> ignore
+
     loader.LoadProjects [ projPath ]
 
-    let fcsPoOpt = fcsBinder.GetProjectOptions(projPath)
+    match fcsBinder.GetProjectOptions(projPath) with
+    | None ->
+        printfn "Cannot get FCS project options for %s" projPath
+    | Some fcsPo ->
+        printfn "FcsPo: %A" fcsPo
 
-    let fcsPo = fcsPoOpt |> Option.get
+        printfn "running ParseAndCheckProject ..."
 
-    printfn "FcsPo: %A" fcsPo
+        let result =
+          fcs.ParseAndCheckProject(fcsPo)
+          |> Async.RunSynchronously
 
-    printfn "running ParseAndCheckProject ..."
+        if result.Errors.Length > 0 then
+            printfn "FCS Result errors: %A" result.Errors
+        else
+            printfn "running GetAllUsesOfAllSymbols ..."
 
-    let result =
-      fcs.ParseAndCheckProject(fcsPo)
-      |> Async.RunSynchronously
+            let uses =
+              result.GetAllUsesOfAllSymbols()
+              |> Async.RunSynchronously
 
-    if result.Errors.Length > 0 then
-      printfn "FCS Result errors: %A" result.Errors
-    else
-
-      printfn "running GetAllUsesOfAllSymbols ..."
-
-      let uses =
-        result.GetAllUsesOfAllSymbols()
-        |> Async.RunSynchronously
-
-      printfn "Usages: %A" uses
+            printfn "Usages: %A" uses
 
 
 [<EntryPoint>]
